@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptCraft - All-in-One Prompt Optimizer & Text Utility</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind Config for custom theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons for clean UI symbols -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Scrollbar for premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-500 text-slate-950 p-2 rounded-lg">
+                    <i data-lucide="terminal" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-brand-500 to-emerald-400 bg-clip-text text-transparent">PromptCraft</h1>
+                    <p class="text-xs text-slate-400">Professional Prompt & Text Optimizer</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-500/10 text-brand-500 border border-brand-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span> Offline Ready
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Kolom Kiri: Input & Kontrol -->
+        <section class="flex flex-col gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-5 h-5 text-brand-500"></i> Input Teks / Prompt Kasar
+                    </h2>
+                    <button onclick="clearInput()" class="text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Bersihkan
+                    </button>
+                </div>
+                
+                <textarea 
+                    id="rawInput" 
+                    placeholder="Tulis ide prompt kasarmu atau paste teks berantakan di sini..." 
+                    class="w-full h-80 bg-slate-950 border border-slate-800 rounded-lg p-4 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition resize-none font-mono text-sm"
+                    oninput="processText()"
+                ></textarea>
+
+                <!-- Alat Pemrosesan Cepat -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <button onclick="optimizePrompt()" class="py-2.5 px-3 bg-brand-500 hover:bg-brand-600 text-slate-950 font-semibold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-brand-500/10">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i> Optimize Prompt
+                    </button>
+                    <button onclick="cleanText()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-slate-700">
+                        <i data-lucide="wand" class="w-4 h-4"></i> Clean Text
+                    </button>
+                    <button onclick="toTitleCase()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-slate-700">
+                        <i data-lucide="case-sensitive" class="w-4 h-4"></i> Title Case
+                    </button>
+                    <button onclick="removeExtraSpaces()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-slate-700">
+                        <i data-lucide="space" class="w-4 h-4"></i> Rapikan Spasi
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kolom Kanan: Output & Analisis -->
+        <section class="flex flex-col gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-brand-500"></i> Hasil Optimal
+                    </h2>
+                    <button onclick="copyToClipboard()" class="text-xs bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-300 font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 border border-slate-700" id="btnCopy">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Salin Hasil
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <pre id="outputContainer" class="w-full h-80 bg-slate-950 border border-slate-800 rounded-lg p-4 text-slate-300 overflow-y-auto font-mono text-sm whitespace-pre-wrap placeholder-empty"></pre>
+                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-600 pointer-events-none">
+                        <i data-lucide="cpu" class="w-12 h-12 mb-2 animate-pulse"></i>
+                        <p class="text-xs">Menunggu input teks...</p>
+                    </div>
+                </div>
+
+                <!-- Metrik Real-time -->
+                <div class="grid grid-cols-3 gap-4 p-4 bg-slate-950 border border-slate-800/80 rounded-lg text-center">
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500">Karakter</p>
+                        <p id="charCount" class="text-lg font-bold text-slate-200">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500">Kata</p>
+                        <p id="wordCount" class="text-lg font-bold text-slate-200">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-slate-500">Est. Waktu Baca</p>
+                        <p id="readTime" class="text-lg font-bold text-slate-200">0s</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-950 bg-slate-950 py-4 text-center text-xs text-slate-600">
+        <p>&copy; 2026 PromptCraft Utility. Dibuat untuk Efisiensi Maksimal.</p>
+    </footer>
+
+    <!-- JavaScript Logika & Interaktivitas -->
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        const rawInput = document.getElementById('rawInput');
+        const outputContainer = document.getElementById('outputContainer');
+        const emptyState = document.getElementById('emptyState');
+
+        // Mengatur visibilitas placeholder/empty state di kontainer output
+        function toggleEmptyState(text) {
+            if (text.trim() === '') {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        // Hitung Metrik Secara Real-time
+        function processText() {
+            const text = rawInput.value;
+            toggleEmptyState(text);
+            
+            // Tampilkan di output jika tidak dioptimasi secara khusus
+            if (outputContainer.innerText === "" || rawInput.value === "") {
+                outputContainer.innerText = text;
+            }
+
+            // Hitung Karakter
+            const charCount = text.length;
+            document.getElementById('charCount').innerText = charCount;
+
+            // Hitung Kata
+            const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+            const wordCount = words.length;
+            document.getElementById('wordCount').innerText = wordCount;
+
+            // Hitung Estimasi Waktu Baca (rata-rata 200 kata/menit)
+            const readTimeSeconds = Math.ceil((wordCount / 200) * 60);
+            document.getElementById('readTime').innerText = wordCount > 0 ? `${readTimeSeconds}s` : '0s';
+        }
+
+        // 1. Fitur: AI Prompt Optimizer (Penerapan Struktur Profesional)
+        function optimizePrompt() {
+            const val = rawInput.value.trim();
+            if(!val) return;
+            
+            const optimized = `[ROLE]
+Kamu adalah seorang tenaga ahli profesional di bidang [Tentukan Bidang Sesuai Konteks].
+
+[CONTEXT]
+Tujuan dari instruksi ini adalah untuk mengoptimalkan tugas berikut berdasarkan input pengguna:
+"${val}"
+
+[TASK & CONSTRAINTS]
+1. Jalankan tugas di atas dengan langkah-langkah yang logis dan terstruktur.
+2. Berikan analisis mendalam, hindari jawaban yang terlalu umum/generik.
+3. Gunakan formatting Markdown yang rapi (bolding, bullet points, table jika relevan) agar mudah dibaca.
+
+[OUTPUT FORMAT]
+- Pendahuluan singkat
+- Solusi utama / Eksekusi langkah-demi-langkah
+- Rekomendasi atau tips tambahan untuk peningkatan kualitas.`;
+
+            outputContainer.innerText = optimized;
+            toggleEmptyState(optimized);
+        }
+
+        // 2. Fitur: Clean Text (Merapikan paragraf dan membuang baris kosong berlebih)
+        function cleanText() {
+            let val = rawInput.value;
+            // Hapus spasi di akhir baris dan gabungkan baris baru yang berlebih (> 2)
+            let cleaned = val.replace(/\r\n/g, "\n")
+                             .replace(/[ \t]+/g, " ")
+                             .replace(/\n{3,}/g, "\n\n")
+                             .trim();
+            outputContainer.innerText = cleaned;
+            toggleEmptyState(cleaned);
+        }
+
+        // 3. Fitur: Title Case
+        function toTitleCase() {
+            let val = rawInput.value.toLowerCase();
+            let result = val.replace(/(?:^|\s|-)\S/g, function(m) { return m.toUpperCase(); });
+            outputContainer.innerText = result;
+            toggleEmptyState(result);
+        }
+
+        // 4. Fitur: Hapus Spasi Ganda
+        function removeExtraSpaces() {
+            let val = rawInput.value;
+            let result = val.replace(/\s+/g, ' ').trim();
+            outputContainer.innerText = result;
+            toggleEmptyState(result);
+        }
+
+        // Bersihkan Input & Output
+        function clearInput() {
+            rawInput.value = '';
+            outputContainer.innerText = '';
+            processText();
+        }
+
+        // Salin ke Clipboard
+        async function copyToClipboard() {
+            const textToCopy = outputContainer.innerText;
+            if(!textToCopy) return;
+
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                const btnCopy = document.getElementById('btnCopy');
+                btnCopy.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Berhasil!`;
+                btnCopy.classList.add('bg-brand-500', 'text-slate-950');
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    btnCopy.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i> Salin Hasil`;
+                    btnCopy.classList.remove('bg-brand-500', 'text-slate-950');
+                    lucide.createIcons();
+                }, 2000);
+            } catch (err) {
+                console.error('Gagal menyalin: ', err);
+            }
+        }
+    </script>
+</body>
+</html>
